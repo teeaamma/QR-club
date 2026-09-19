@@ -10,3 +10,7 @@ databaseChangeLog:
   - include:
       file: 003-initial-data.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: 004-add-is-deleted-column.yaml
+      relativeToChangelogFile: true

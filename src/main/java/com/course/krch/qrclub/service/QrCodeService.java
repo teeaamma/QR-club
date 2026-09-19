@@ -9,9 +9,11 @@ import com.course.krch.qrclub.exception.NotFoundException;
 import com.course.krch.qrclub.mapper.ParticipantMapper;
 import com.course.krch.qrclub.mapper.QrCodeMapper;
 import com.course.krch.qrclub.repository.QrCodeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -25,18 +27,15 @@ public class QrCodeService {
         this.participantService = participantService;
     }
 
-    public List<QrCodeResponseDto> getAll(){
-        return repository.findAll()
-                .stream()
-                .map(QrCodeMapper::toDto)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<QrCodeResponseDto> getAll(Pageable pageable){
+        return repository.findAllByIsDeletedFalse(pageable)
+                .map(QrCodeMapper::toDto);
     }
 
+    @Transactional(readOnly = true)
     public QrCodeResponseDto getById(UUID id){
-        QrCode qrCode = repository.findById(id)
-                .orElseThrow(() ->
-                        new NotFoundException("QR-кода с id = " + id + " не существует")
-                );
+        QrCode qrCode = repository.findByIdAndIsDeletedFalseOrThrow(id);
         return QrCodeMapper.toDto(qrCode);
     }
 
@@ -47,11 +46,9 @@ public class QrCodeService {
         return QrCodeMapper.toDto(code);
     }
 
+    @Transactional
     public QrCodeResponseDto update(UUID id, QrCodeRequestDto dto){
-        QrCode qrCode = repository.findById(id)
-                .orElseThrow(() ->
-                        new NotFoundException("QR-кода с id = " + id + " не существует")
-                );
+        QrCode qrCode = repository.findByIdAndIsDeletedFalseOrThrow(id);
 
         Participant newParticipant = participantService.getParticipantById(dto.userId());
         qrCode.setParticipant(newParticipant);
@@ -60,18 +57,17 @@ public class QrCodeService {
         return QrCodeMapper.toDto(updatedQrCode);
     }
 
+    @Transactional
     public void delete(UUID id){
-        if (!repository.existsById(id))
-            throw new NotFoundException("QR-кода с id = " + id + " не существует");
+        int updatedRows = repository.softDeleteById(id);
 
-        repository.deleteById(id);
+        if (updatedRows == 0)
+            throw new NotFoundException("QR-кода с id = " + id + " не существует");
     }
 
+    @Transactional
     public ParticipantResponseDto scan(UUID id){
-        QrCode qrCode = repository.findById(id)
-                .orElseThrow(() ->
-                        new NotFoundException("QR-кода с id = " + id + " не существует")
-                );
+        QrCode qrCode = repository.findByIdAndIsDeletedFalseOrThrow(id);
 
         Participant participant = qrCode.getParticipant();
         this.delete(qrCode.getId());

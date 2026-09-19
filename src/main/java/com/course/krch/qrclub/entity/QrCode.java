@@ -16,6 +16,9 @@ public class QrCode {
     @JoinColumn(name = "participant_id", nullable = false)
     private Participant participant;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public QrCode() {
     }
 

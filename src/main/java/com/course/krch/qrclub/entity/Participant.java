@@ -18,6 +18,9 @@ public class Participant {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public Participant() {
     }
 
@@ -28,10 +31,6 @@ public class Participant {
 
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public String getFirstName() {

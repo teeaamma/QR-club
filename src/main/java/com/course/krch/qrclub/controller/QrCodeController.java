@@ -4,9 +4,11 @@ import com.course.krch.qrclub.dto.ParticipantResponseDto;
 import com.course.krch.qrclub.dto.QrCodeRequestDto;
 import com.course.krch.qrclub.dto.QrCodeResponseDto;
 import com.course.krch.qrclub.service.QrCodeService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,8 +22,8 @@ public class QrCodeController {
     }
 
     @GetMapping
-    public List<QrCodeResponseDto> getAll(){
-        return service.getAll();
+    public Page<QrCodeResponseDto> getAll(Pageable pageable){
+        return service.getAll(pageable);
     }
 
     @GetMapping("/{id}")
@@ -30,14 +32,14 @@ public class QrCodeController {
     }
 
     @PostMapping
-    public QrCodeResponseDto create(@RequestBody QrCodeRequestDto dto){
+    public QrCodeResponseDto create(@Valid @RequestBody QrCodeRequestDto dto){
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
     public QrCodeResponseDto update(
             @PathVariable UUID id,
-            @RequestBody QrCodeRequestDto dto
+            @Valid @RequestBody QrCodeRequestDto dto
     ){
         return service.update(id, dto);
     }

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 002-create-qr-codes
+      id: 003-initial-data
       author: timofey chervov
 
       changes:
