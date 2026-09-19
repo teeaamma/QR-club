@@ -23,7 +23,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, UUID>,
 
     @Modifying
     @Query("""
-            update Participant p 
+            update Participant p
             set p.isDeleted = true
             where p.id = :id
             and p.isDeleted = false
