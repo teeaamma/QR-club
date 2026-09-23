@@ -32,4 +32,13 @@ public interface QrCodeRepository extends JpaRepository<QrCode, UUID> {
             and q.isDeleted = false
             """)
     int softDeleteById(UUID id);
+
+    @Modifying
+    @Query("""
+            update QrCode q
+            set q.isDeleted = true
+            where q.participant.id = :id
+            and q.isDeleted = false
+            """)
+    int softDeleteByParticipantId(UUID id);
 }

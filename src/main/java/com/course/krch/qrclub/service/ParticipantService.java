@@ -6,6 +6,7 @@ import com.course.krch.qrclub.entity.Participant;
 import com.course.krch.qrclub.exception.NotFoundException;
 import com.course.krch.qrclub.mapper.ParticipantMapper;
 import com.course.krch.qrclub.repository.ParticipantRepository;
+import com.course.krch.qrclub.repository.QrCodeRepository;
 import com.course.krch.qrclub.specification.ParticipantSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +19,12 @@ import java.util.UUID;
 @Service
 public class ParticipantService {
 
-    private final ParticipantRepository repository;
+    private final ParticipantRepository participantRepository;
+    private final QrCodeRepository qrCodeRepository;
 
-    public ParticipantService(ParticipantRepository repository) {
-        this.repository = repository;
+    public ParticipantService(ParticipantRepository participantRepository, QrCodeRepository qrCodeRepository) {
+        this.participantRepository = participantRepository;
+        this.qrCodeRepository = qrCodeRepository;
     }
 
     @Transactional(readOnly = true)
@@ -33,24 +36,24 @@ public class ParticipantService {
                 ParticipantSpecification.notDeleted()
         );
 
-        return repository.findAll(specification, pageable)
+        return participantRepository.findAll(specification, pageable)
                 .map(ParticipantMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public ParticipantResponseDto getById(UUID id){
-        Participant participant = repository.findByIdAndIsDeletedFalseOrThrow(id);
+        Participant participant = participantRepository.findByIdAndIsDeletedFalseOrThrow(id);
         return ParticipantMapper.toDto(participant);
     }
 
     public ParticipantResponseDto create(ParticipantRequestDto dto){
-        Participant participant =  repository.save(ParticipantMapper.toEntity(dto));
+        Participant participant =  participantRepository.save(ParticipantMapper.toEntity(dto));
         return ParticipantMapper.toDto(participant);
     }
 
     @Transactional
     public ParticipantResponseDto update(UUID id, ParticipantRequestDto dto){
-        Participant participant = repository.findByIdAndIsDeletedFalseOrThrow(id);
+        Participant participant = participantRepository.findByIdAndIsDeletedFalseOrThrow(id);
 
         String firstName = dto.firstName();
         String lastName = dto.lastName();
@@ -61,20 +64,22 @@ public class ParticipantService {
         if (lastName != null && !lastName.equals(participant.getLastName()))
             participant.setLastName(lastName);
 
-        Participant updatedParticipant = repository.save(participant);
+        Participant updatedParticipant = participantRepository.save(participant);
         return ParticipantMapper.toDto(updatedParticipant);
     }
 
     @Transactional
     public void delete(UUID id){
-        int updatedRows = repository.softDeleteById(id);
+        int updatedRows = participantRepository.softDeleteById(id);
 
         if (updatedRows == 0)
             throw new NotFoundException("Участника с id = " + id + " не существует");
+
+        qrCodeRepository.softDeleteByParticipantId(id);
     }
 
     @Transactional(readOnly = true)
     public Participant getParticipantById(UUID id){
-        return repository.findByIdAndIsDeletedFalseOrThrow(id);
+        return participantRepository.findByIdAndIsDeletedFalseOrThrow(id);
     }
 }
