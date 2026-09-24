@@ -1,0 +1,1 @@
+TRUNCATE TABLE qr_codes, participants;

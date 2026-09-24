@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: 001-create-participants.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: 002-create-qr-codes.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: 003-initial-data.yaml
+      relativeToChangelogFile: true
+
+  - include:
+      file: 004-add-is-deleted-column.yaml
+      relativeToChangelogFile: true

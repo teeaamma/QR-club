@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-qr-codes
+      author: timofey chervov
+
+      changes:
+        - createTable:
+            tableName: qr_codes
+
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: participant_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            constraintName: participant_qr_code_fk
+            baseTableName: qr_codes
+            baseColumnNames: participant_id
+            referencedTableName: participants
+            referencedColumnNames: id
+            onDelete: CASCADE

@@ -1,0 +1,5 @@
+INSERT INTO participants (id, first_name, last_name)
+VALUES ('11111111-1111-4111-1111-111111111111', 'Андрей', 'Андреев');
+
+INSERT INTO qr_codes (id, participant_id, is_deleted)
+VALUES ('22222222-2222-4222-2222-222222222222', '11111111-1111-4111-1111-111111111111', true);
