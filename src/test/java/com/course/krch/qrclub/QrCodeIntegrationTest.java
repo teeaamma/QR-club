@@ -3,19 +3,9 @@ package com.course.krch.qrclub;
 import com.course.krch.qrclub.repository.QrCodeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
-import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.util.UUID;
 
@@ -27,28 +17,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(properties = "spring.liquibase.contexts=test")
-@AutoConfigureMockMvc
-@Testcontainers
-@Sql(scripts = "/sql/cleanup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
-public class QrCodeIntegrationTest {
-
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:18.3");
-
-    @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    JsonMapper jsonMapper;
+public class QrCodeIntegrationTest extends AbstractIntegrationTest{
 
     @Autowired
     QrCodeRepository repository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     @Sql("/sql/qr-code/list.sql")
